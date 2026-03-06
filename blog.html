@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>5 Things Pigeons Can Do That AI Still Can't</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inconsolata:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f0f10;
+      --surface: #181819;
+      --surface2: #202022;
+      --border: #2a2a2e;
+      --text: #d4d6d8;
+      --text-dim: #9da0a8;
+      --text-muted: #2e2e32;
+
+      --teal: #5ec4b0;
+      --teal-dim: #2e7a6e;
+      --magenta: #c45e9a;
+      --magenta-dim: #7a2e5a;
+      --silver: #a8adb5;
+      --silver-dim: #4a4e55;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inconsolata', monospace;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at 15% 20%, rgba(94,196,176,0.04) 0%, transparent 55%),
+                  radial-gradient(ellipse at 85% 80%, rgba(196,94,154,0.05) 0%, transparent 55%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 3rem;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: rgba(15,15,16,0.96);
+      backdrop-filter: blur(10px);
+      z-index: 100;
+    }
+    nav .logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.4rem;
+      letter-spacing: 3px;
+      background: linear-gradient(90deg, var(--teal), var(--magenta));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    nav a {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0.5;
+      transition: opacity 0.2s, color 0.2s;
+    }
+    nav a:hover { opacity: 1; color: var(--teal); }
+
+    .article-hero {
+      padding: 5rem 3rem 4rem;
+      border-bottom: 1px solid var(--border);
+      max-width: 900px;
+      animation: fadeUp 0.7s ease both;
+      position: relative;
+      z-index: 1;
+    }
+
+    .article-tag {
+      font-size: 0.7rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--magenta);
+      margin-bottom: 1.5rem;
+    }
+
+    .article-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3rem, 6vw, 6rem);
+      line-height: 1;
+      letter-spacing: 2px;
+      margin-bottom: 1.5rem;
+      color: var(--text);
+    }
+
+    .article-title span {
+      background: linear-gradient(90deg, var(--teal), var(--magenta));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .article-meta {
+      display: flex;
+      gap: 2rem;
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .article-layout {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      z-index: 1;
+    }
+
+    .article-body {
+      padding: 4rem 3rem;
+      border-right: 1px solid var(--border);
+    }
+
+    .intro {
+      font-size: 1.15rem;
+      line-height: 1.9;
+      color: var(--text-dim);
+      margin-bottom: 3rem;
+      padding-bottom: 3rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .intro strong { color: var(--text); }
+
+    .point {
+      margin-bottom: 3.5rem;
+      padding-bottom: 3.5rem;
+      border-bottom: 1px solid #1a1a1c;
+      animation: fadeUp 0.5s ease both;
+    }
+    .point:last-child { border-bottom: none; }
+
+    .point-number {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 5rem;
+      color: #1a1a1c;
+      line-height: 1;
+      margin-bottom: -0.5rem;
+    }
+
+    .point-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem;
+      letter-spacing: 2px;
+      color: var(--text);
+      margin-bottom: 1rem;
+    }
+
+    .point-title span {
+      background: linear-gradient(90deg, var(--teal), var(--magenta));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .point-body {
+      font-size: 1.05rem;
+      line-height: 1.9;
+      color: var(--text-dim);
+    }
+    .point-body strong { color: var(--text); }
+
+    .verdict-box {
+      background: linear-gradient(135deg, rgba(46,122,110,0.2), rgba(122,46,90,0.2));
+      border-left: 3px solid;
+      border-image: linear-gradient(to bottom, var(--teal), var(--magenta)) 1;
+      padding: 1.2rem 1.5rem;
+      margin-top: 1.2rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.8rem;
+    }
+
+    .verdict-label {
+      font-size: 0.65rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--teal);
+      white-space: nowrap;
+      padding-top: 2px;
+    }
+
+    .verdict-text {
+      font-size: 0.85rem;
+      line-height: 1.6;
+      color: var(--silver);
+    }
+
+    /* SIDEBAR */
+    .sidebar { padding: 3rem 2rem; }
+    .sidebar-section { margin-bottom: 3rem; }
+
+    .sidebar-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1rem;
+      letter-spacing: 3px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .score-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.8rem 0;
+      border-bottom: 1px solid #141415;
+      font-size: 0.8rem;
+    }
+
+    .score-name { color: var(--text-dim); letter-spacing: 1px; }
+
+    .score-val {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.1rem;
+      letter-spacing: 2px;
+    }
+    .score-val.pigeon { color: var(--teal); }
+    .score-val.ai { color: var(--magenta); }
+
+    .fun-fact {
+      background: var(--surface);
+      border-left: 3px solid var(--magenta-dim);
+      padding: 1.2rem;
+      font-size: 0.82rem;
+      line-height: 1.7;
+      color: var(--text-dim);
+      margin-bottom: 1rem;
+    }
+
+    .fun-fact strong {
+      background: linear-gradient(90deg, var(--teal), var(--magenta));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: block;
+      margin-bottom: 0.3rem;
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .conclusion {
+      padding: 4rem 3rem;
+      border-top: 1px solid var(--border);
+      background: #0a0a0b;
+      position: relative;
+      z-index: 1;
+    }
+
+    .conclusion-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.5rem;
+      letter-spacing: 3px;
+      margin-bottom: 1.5rem;
+      color: var(--text);
+    }
+
+    .conclusion-title span {
+      background: linear-gradient(90deg, var(--teal), var(--magenta));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .conclusion p {
+      font-size: 1.05rem;
+      line-height: 1.9;
+      color: var(--text-dim);
+      max-width: 700px;
+      margin-bottom: 1rem;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 2rem;
+      color: var(--teal);
+      text-decoration: none;
+      font-size: 0.8rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--teal-dim);
+      padding-bottom: 2px;
+      transition: opacity 0.2s;
+    }
+    .back-link:hover { opacity: 0.6; }
+
+    footer {
+      padding: 2rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border);
+      position: relative;
+      z-index: 1;
+    }
+
+    footer p { font-size: 0.75rem; letter-spacing: 2px; color: var(--text-muted); text-transform: uppercase; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      .article-layout { grid-template-columns: 1fr; }
+      .sidebar { border-top: 1px solid var(--border); }
+      .article-body { padding: 2rem 1.5rem; }
+      .article-hero, .conclusion, footer, nav { padding-left: 1.5rem; padding-right: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <span class="logo">PigeonAI</span>
+    <a href="index.html">← Back to Home</a>
+  </nav>
+
+  <div class="article-hero">
+    <p class="article-tag">// Feature Article</p>
+    <h1 class="article-title">5 Things Pigeons Can Do<br>That <span>AI Still Can't</span></h1>
+    <div class="article-meta">
+      <span>March 2025</span>
+      <span>8 min read</span>
+      <span>Very Serious Research</span>
+    </div>
+  </div>
+
+  <div class="article-layout">
+    <main class="article-body">
+
+      <p class="intro">
+        Artificial Intelligence has beaten humans at chess, written Shakespearean sonnets, and generated photorealistic images of things that don't exist.
+        But before we hand over civilization to our silicon overlords, we must ask: <strong>could they beat a pigeon?</strong>
+        After extensive (and only slightly absurd) research, the answer may surprise you.
+      </p>
+
+      <div class="point">
+        <div class="point-number">01</div>
+        <h2 class="point-title">Navigate Home <span>Without GPS</span></h2>
+        <p class="point-body">
+          Pigeons possess a magnetic compass in their beaks — literally. They detect Earth's magnetic field to navigate thousands of miles back home with stunning accuracy.
+          <strong>Homing pigeons have delivered wartime messages across enemy lines with a 95% success rate.</strong>
+          <br><br>
+          AI navigation, on the other hand, once told a driver to turn into a lake. Google Maps has routed people into rivers, fields, and at least one active construction zone. The pigeon asks for no satellite uplink, no 5G, no subscription fee.
+        </p>
+        <div class="verdict-box">
+          <span class="verdict-label">Verdict</span>
+          <span class="verdict-text">Pigeon wins. No contest. It literally has a compass in its face.</span>
+        </div>
+      </div>
+
+      <div class="point">
+        <div class="point-number">02</div>
+        <h2 class="point-title">Recognize Human Faces <span>Across Years</span></h2>
+        <p class="point-body">
+          Studies show pigeons can recognize individual human faces and remember them for years — even when that person changes clothes, hairstyle, or expression.
+          <strong>They've been trained to distinguish between different people in photographs with impressive accuracy.</strong>
+          <br><br>
+          AI facial recognition? Confidently identifies a chihuahua as a muffin, mistakes a Black man for a gorilla (famously, catastrophically), and occasionally fails to unlock your phone because you got a haircut.
+        </p>
+        <div class="verdict-box">
+          <span class="verdict-label">Verdict</span>
+          <span class="verdict-text">Pigeon wins. It won't accidentally report you to the wrong database.</span>
+        </div>
+      </div>
+
+      <div class="point">
+        <div class="point-number">03</div>
+        <h2 class="point-title">Operate on <span>Zero Electricity</span></h2>
+        <p class="point-body">
+          A pigeon runs entirely on breadcrumbs, seeds, and whatever it finds on the pavement.
+          <strong>Its entire lifetime energy consumption is negligible compared to a single AI training run.</strong>
+          <br><br>
+          Training GPT-4 reportedly consumed enough electricity to power hundreds of homes for a year.
+          Running a single AI query uses roughly as much energy as charging your phone 20%. The pigeon? It charged itself this morning on half a pretzel from a tourist near a fountain.
+        </p>
+        <div class="verdict-box">
+          <span class="verdict-label">Verdict</span>
+          <span class="verdict-text">Pigeon wins. Dramatically. The planet agrees.</span>
+        </div>
+      </div>
+
+      <div class="point">
+        <div class="point-number">04</div>
+        <h2 class="point-title">Know When <span>to Stay Quiet</span></h2>
+        <p class="point-body">
+          When a pigeon doesn't know something, it simply does nothing. It doesn't fabricate a confident answer.
+          It doesn't cite three fake academic papers. It doesn't assure you it's "happy to help" before giving you completely wrong directions.
+          <br><br>
+          <strong>AI hallucinates with the confidence of a politician.</strong> It has invented lawyers, cited non-existent court cases, and assured medical patients that a medication was safe — when it wasn't. The pigeon's silence, it turns out, is a feature.
+        </p>
+        <div class="verdict-box">
+          <span class="verdict-label">Verdict</span>
+          <span class="verdict-text">Pigeon wins. "Coo" is never a hallucination.</span>
+        </div>
+      </div>
+
+      <div class="point">
+        <div class="point-number">05</div>
+        <h2 class="point-title">Detect Cancer <span>From Slides</span></h2>
+        <p class="point-body">
+          This one is not a joke. A 2015 study published in PLOS ONE found that <strong>pigeons trained for just two weeks could identify cancerous tissue in pathology slides with 85% accuracy</strong> — comparable to trained human pathologists.
+          <br><br>
+          While AI medical imaging tools also show great promise, they require vast labeled datasets, significant computing infrastructure, and regulatory approval. The pigeon needed a reward pellet and two weeks. Discuss.
+        </p>
+        <div class="verdict-box">
+          <span class="verdict-label">Verdict</span>
+          <span class="verdict-text">Pigeon wins. It is literally a licensed (unlicensed) diagnostician.</span>
+        </div>
+      </div>
+
+    </main>
+
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-title">Scoreboard</div>
+        <div class="score-item"><span class="score-name">Navigation</span><span class="score-val pigeon">🐦 W</span></div>
+        <div class="score-item"><span class="score-name">Face Memory</span><span class="score-val pigeon">🐦 W</span></div>
+        <div class="score-item"><span class="score-name">Energy Use</span><span class="score-val pigeon">🐦 W</span></div>
+        <div class="score-item"><span class="score-name">Staying Quiet</span><span class="score-val pigeon">🐦 W</span></div>
+        <div class="score-item"><span class="score-name">Cancer Detection</span><span class="score-val pigeon">🐦 W</span></div>
+        <div class="score-item"><span class="score-name">Writing Poetry</span><span class="score-val ai">🤖 W</span></div>
+        <div class="score-item"><span class="score-name">Coding Apps</span><span class="score-val ai">🤖 W</span></div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-title">Pigeon Facts</div>
+        <div class="fun-fact">
+          <strong>Did you know?</strong>
+          Pigeons were awarded military medals in both World Wars for delivering critical messages under fire.
+        </div>
+        <div class="fun-fact">
+          <strong>Fun Fact</strong>
+          Pigeons are one of only a handful of species that can recognize themselves in a mirror — a test of self-awareness most animals fail.
+        </div>
+        <div class="fun-fact">
+          <strong>Stat</strong>
+          A pigeon's top speed is 92 mph. Your internet connection is probably slower.
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+  <div class="conclusion">
+    <h2 class="conclusion-title">The <span>Verdict</span></h2>
+    <p>Look, AI is impressive. It can write code, translate languages, summarize documents, and generate images of cats wearing business suits. We are not dismissing that.</p>
+    <p>But let's not forget: the pigeon was here first. It has survived extinction events (sort of), delivered wartime intelligence, diagnosed cancer, and navigated continents — all before breakfast, all on breadcrumbs.</p>
+    <p>The future may belong to artificial intelligence. But the skies, the parks, and your lunch? Those still belong to the pigeon.</p>
+    <a href="index.html" class="back-link">← Back to Home</a>
+  </div>
+
+  <footer>
+    <p>© 2025 PigeonAI — No pigeons were harmed in this website</p>
+    <p>A totally serious scientific study</p>
+  </footer>
+
+</body>
+</html>

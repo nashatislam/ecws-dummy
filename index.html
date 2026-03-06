@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pigeons vs AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inconsolata:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f0f10;
+      --surface: #181819;
+      --surface2: #202022;
+      --border: #2a2a2e;
+      --text: #d4d6d8;
+      --text-dim: #9da0a8;
+      --text-muted: #2e2e32;
+
+      /* Pigeon iridescent palette */
+      --teal: #5ec4b0;
+      --teal-dim: #2e7a6e;
+      --magenta: #c45e9a;
+      --magenta-dim: #7a2e5a;
+      --silver: #a8adb5;
+      --silver-dim: #4a4e55;
+      --feather: #3a3d42;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inconsolata', monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* subtle iridescent grain overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at 20% 30%, rgba(94,196,176,0.04) 0%, transparent 60%),
+                  radial-gradient(ellipse at 80% 70%, rgba(196,94,154,0.05) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 3rem;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: rgba(15,15,16,0.96);
+      backdrop-filter: blur(10px);
+      z-index: 100;
+    }
+    nav .logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.4rem;
+      letter-spacing: 3px;
+      background: linear-gradient(90deg, var(--teal), var(--magenta));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    nav a {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0.5;
+      transition: opacity 0.2s, color 0.2s;
+    }
+    nav a:hover { opacity: 1; color: var(--teal); }
+
+    /* HERO */
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 90vh;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-left {
+      padding: 5rem 3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-right: 1px solid var(--border);
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .tag {
+      font-size: 0.7rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(4rem, 8vw, 8rem);
+      line-height: 0.95;
+      letter-spacing: 2px;
+      margin-bottom: 2rem;
+      color: var(--text);
+    }
+
+    .hero-title span.vs {
+      display: block;
+      background: linear-gradient(90deg, var(--teal), var(--magenta));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-title span.ai { color: var(--silver); }
+
+    .hero-desc {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: var(--text-dim);
+      max-width: 420px;
+      margin-bottom: 2.5rem;
+    }
+
+    .cta {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--teal-dim), var(--magenta-dim));
+      color: #fff;
+      font-family: 'Inconsolata', monospace;
+      font-weight: 700;
+      font-size: 0.8rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 0.9rem 2rem;
+      text-decoration: none;
+      transition: opacity 0.2s, transform 0.2s;
+      width: fit-content;
+      position: relative;
+    }
+    .cta::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--teal), var(--magenta));
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .cta:hover::after { opacity: 1; }
+    .cta:hover { transform: translateX(4px); }
+    .cta span { position: relative; z-index: 1; }
+
+    /* VERSUS PANEL */
+    .hero-right {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      animation: fadeUp 0.8s 0.2s ease both;
+    }
+
+    .versus-block {
+      display: grid;
+      grid-template-rows: 1fr auto 1fr;
+      height: 100%;
+      width: 100%;
+    }
+
+    .entity {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem;
+      gap: 1.2rem;
+    }
+
+    .entity.pigeon {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* iridescent glow behind pigeon panel */
+    .entity.pigeon::before {
+      content: '';
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(94,196,176,0.12) 0%, rgba(196,94,154,0.08) 50%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .entity.ai { background: #111112; }
+
+    .entity-emoji {
+      font-size: 5.5rem;
+      animation: float 3.5s ease-in-out infinite;
+      position: relative;
+      z-index: 1;
+      filter: drop-shadow(0 0 18px rgba(94,196,176,0.3));
+    }
+    .entity.ai .entity-emoji {
+      animation-delay: 1.5s;
+      filter: drop-shadow(0 0 18px rgba(196,94,154,0.25));
+    }
+
+    .entity-label {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem;
+      letter-spacing: 4px;
+      color: var(--text);
+      opacity: 0.2;
+      position: relative;
+      z-index: 1;
+    }
+
+    .vs-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(90deg, var(--teal-dim), var(--magenta-dim));
+      padding: 1rem;
+    }
+
+    .vs-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.5rem;
+      letter-spacing: 6px;
+      color: #fff;
+    }
+
+    /* STATS */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      z-index: 1;
+    }
+
+    .stat {
+      padding: 3rem;
+      border-right: 1px solid var(--border);
+      animation: fadeUp 0.6s ease both;
+    }
+    .stat:last-child { border-right: none; }
+
+    .stat-number {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 4rem;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(90deg, var(--teal), var(--magenta));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    /* TOPICS */
+    .topics {
+      padding: 5rem 3rem;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 3rem;
+      letter-spacing: 2px;
+      color: var(--text);
+    }
+
+    .section-line { flex: 1; height: 1px; background: var(--border); }
+
+    .topic-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      background: var(--border);
+    }
+
+    .topic-card {
+      background: var(--bg);
+      padding: 2.5rem;
+      transition: background 0.2s;
+      cursor: default;
+    }
+    .topic-card:hover { background: var(--surface); }
+
+    .topic-icon { font-size: 2rem; margin-bottom: 1rem; }
+
+    .topic-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem;
+      letter-spacing: 2px;
+      margin-bottom: 0.8rem;
+      color: var(--text);
+    }
+
+    .topic-desc { font-size: 0.95rem; line-height: 1.7; color: var(--text-dim); }
+
+    footer {
+      padding: 2rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border);
+      position: relative;
+      z-index: 1;
+    }
+
+    footer p { font-size: 0.75rem; letter-spacing: 2px; color: var(--text-muted); text-transform: uppercase; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+
+    @media (max-width: 768px) {
+      .hero { grid-template-columns: 1fr; }
+      .hero-right { min-height: 400px; }
+      .stats { grid-template-columns: 1fr; }
+      .stat { border-right: none; border-bottom: 1px solid var(--border); }
+      .topic-grid { grid-template-columns: 1fr; }
+      nav, .hero-left, .topics { padding-left: 1.5rem; padding-right: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <span class="logo">PigeonAI</span>
+    <a href="blog.html">Read the Blog →</a>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-left">
+      <p class="tag">// The Ultimate Showdown</p>
+      <h1 class="hero-title">
+        PIGEONS
+        <span class="vs">VS</span>
+        <span class="ai">ARTIFI­CIAL<br>INTEL­LIGENCE</span>
+      </h1>
+      <p class="hero-desc">
+        One navigates cities without GPS. The other hallucinates facts with full confidence.
+        Who is truly the superior intelligence? We investigate.
+      </p>
+      <a href="blog.html" class="cta"><span>Read the Verdict →</span></a>
+    </div>
+
+    <div class="hero-right">
+      <div class="versus-block">
+        <div class="entity pigeon">
+          <!-- Cute minimal flat pigeon -->
+          <svg width="110" height="110" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="animation: float 3.5s ease-in-out infinite;">
+            <!-- tail -->
+            <ellipse cx="18" cy="67" rx="14" ry="6" fill="#5a6070" transform="rotate(20 18 67)"/>
+            <!-- body -->
+            <ellipse cx="50" cy="65" rx="30" ry="22" fill="#8c94a0"/>
+            <!-- belly -->
+            <ellipse cx="56" cy="70" rx="18" ry="14" fill="#c0c6d0"/>
+            <!-- iridescent neck -->
+            <ellipse cx="66" cy="52" rx="13" ry="16" fill="#7abfb8"/>
+            <ellipse cx="67" cy="53" rx="9" ry="11" fill="#b87ab0" opacity="0.5"/>
+            <!-- wing -->
+            <ellipse cx="44" cy="66" rx="24" ry="13" fill="#7a8290" transform="rotate(-6 44 66)"/>
+            <ellipse cx="38" cy="69" rx="16" ry="8" fill="#6a7080" transform="rotate(-6 38 69)"/>
+            <!-- head -->
+            <circle cx="72" cy="40" r="16" fill="#9aa2ae"/>
+            <!-- eye ring -->
+            <circle cx="78" cy="35" r="6" fill="#e8a020"/>
+            <!-- eye -->
+            <circle cx="78" cy="35" r="4" fill="#1a1520"/>
+            <!-- shine -->
+            <circle cx="80" cy="33" r="1.4" fill="white"/>
+            <!-- beak -->
+            <path d="M86 38 Q94 36 93 40 Q89 43 85 41 Z" fill="#d4b87a"/>
+            <path d="M85 41 Q89 43 88 46 Q85 45 85 42 Z" fill="#b89a60"/>
+            <!-- cere -->
+            <ellipse cx="87" cy="37" rx="2.2" ry="1.4" fill="#ede0c8"/>
+            <!-- feet -->
+            <line x1="45" y1="86" x2="41" y2="96" stroke="#b8905a" stroke-width="2" stroke-linecap="round"/>
+            <line x1="41" y1="96" x2="35" y2="99" stroke="#b8905a" stroke-width="1.6" stroke-linecap="round"/>
+            <line x1="41" y1="96" x2="42" y2="100" stroke="#b8905a" stroke-width="1.6" stroke-linecap="round"/>
+            <line x1="41" y1="96" x2="47" y2="99" stroke="#b8905a" stroke-width="1.6" stroke-linecap="round"/>
+            <line x1="55" y1="86" x2="52" y2="96" stroke="#b8905a" stroke-width="2" stroke-linecap="round"/>
+            <line x1="52" y1="96" x2="46" y2="99" stroke="#b8905a" stroke-width="1.6" stroke-linecap="round"/>
+            <line x1="52" y1="96" x2="53" y2="100" stroke="#b8905a" stroke-width="1.6" stroke-linecap="round"/>
+            <line x1="52" y1="96" x2="58" y2="99" stroke="#b8905a" stroke-width="1.6" stroke-linecap="round"/>
+            <!-- blush -->
+            <ellipse cx="70" cy="47" rx="5" ry="3" fill="#e090b0" opacity="0.25"/>
+          </svg>
+          <div class="entity-label">Pigeon</div>
+        </div>
+        <div class="vs-divider">
+          <span class="vs-text">VS</span>
+        </div>
+        <div class="entity ai">
+          <div class="entity-emoji">🤖</div>
+          <div class="entity-label">A.I.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="stats">
+    <div class="stat">
+      <div class="stat-number">400M+</div>
+      <div class="stat-label">Pigeons on Earth</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">0</div>
+      <div class="stat-label">Pigeons that need electricity</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">∞</div>
+      <div class="stat-label">Times AI has been "wrong but confident"</div>
+    </div>
+  </section>
+
+  <section class="topics">
+    <div class="section-header">
+      <h2 class="section-title">What We Cover</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="topic-grid">
+      <div class="topic-card">
+        <div class="topic-icon">🧭</div>
+        <div class="topic-title">Navigation Skills</div>
+        <div class="topic-desc">Pigeons have been navigating continents for centuries. AI still gets confused by roundabouts.</div>
+      </div>
+      <div class="topic-card">
+        <div class="topic-icon">🧠</div>
+        <div class="topic-title">Memory & Learning</div>
+        <div class="topic-desc">Can a pigeon recognize 1,000 images? Spoiler: yes. Can AI recognize its own mistakes? Spoiler: no.</div>
+      </div>
+      <div class="topic-card">
+        <div class="topic-icon">⚡</div>
+        <div class="topic-title">Energy Consumption</div>
+        <div class="topic-desc">A pigeon runs on breadcrumbs. GPT-4 runs on the power of a small country.</div>
+      </div>
+      <div class="topic-card">
+        <div class="topic-icon">💬</div>
+        <div class="topic-title">Communication</div>
+        <div class="topic-desc">Pigeons delivered wartime messages reliably. AI once told someone to put glue on pizza.</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2025 PigeonAI — No pigeons were harmed in this website</p>
+    <p>A totally serious scientific study</p>
+  </footer>
+
+</body>
+</html>
